@@ -9,7 +9,7 @@ Postman을 통해 직접 인증 흐름을 테스트할 수 있도록 설계되�
 ## 🔧 사용 기술 스택
 
 - Java 21
-- Spring Boot 3.x
+- **Spring Boot 3.5.4**
 - Spring Security
 - JWT (io.jsonwebtoken)
 - Gradle
