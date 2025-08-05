@@ -23,6 +23,7 @@ public class AuthController {
 
         // 인증 성공 가정, userId는 이메일로 대체
         TokenDTO tokenDTO = jwtTokenProvider.generateAccessToken(request.getEmail());
+
         return ResponseEntity.ok(tokenDTO);
     }
 }

@@ -18,8 +18,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // session 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll())
-                .build();
+                        .anyRequest().permitAll());
+
 
         return http.build();
     }
