@@ -5,6 +5,7 @@ import com.example.boilerplate_auth_security.dto.TokenDTO;
 import com.example.boilerplate_auth_security.dto.request.LoginRequestDTO;
 import com.example.boilerplate_auth_security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,8 @@ public class AuthController {
         // 인증 성공 가정, userId는 이메일로 대체
         TokenDTO tokenDTO = jwtTokenProvider.generateAccessToken(request.getEmail());
 
-        return ResponseEntity.ok(tokenDTO);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(tokenDTO);
     }
 }
