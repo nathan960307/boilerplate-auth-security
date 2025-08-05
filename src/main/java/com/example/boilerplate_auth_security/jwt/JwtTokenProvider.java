@@ -1,0 +1,105 @@
+package com.example.boilerplate_auth_security.jwt;
+
+import com.example.boilerplate_auth_security.dto.TokenDTO;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+@Component
+@Slf4j
+public class JwtTokenProvider {
+
+    @Getter
+    @Value("${jwt.access-expiration}")
+    private long atExpiration; // access token 만료 시간
+
+    @Getter
+    @Value("${jwt.refresh-expiration}")
+    private long rtExpiration; // refresh token 만료 시간
+
+    @Value("${jwt.secret}")
+    private String key;
+
+    private SecretKey secretKey;
+
+
+    /**
+     * 1. key 문자열을 바이트 문자열로 변환
+     * 2. 해당 바이트 배열을 기반으로 HMAC-SHA 알고리즘에 필요한 비밀키 객체를 생성
+     *
+     * 입력한 key 값이 내부적으로 암호학적 난수(비밀키) 역할을 하도록 변환되며,
+     * JWT 서명 과 검증에 안전하게 쓰이는 SecretKey 객체가 됨
+     * */
+    // 비밀 키 만들기
+    public SecretKey getSecretKey(){
+        if(secretKey == null){
+            secretKey  = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
+        }
+        return secretKey;
+    }
+
+    // access token 생성
+    public TokenDTO generateAccessToken(String userId){
+
+        String jti = UUID.randomUUID().toString(); // jti
+
+        long now = new Date().getTime();
+        Date atExpiresIn = new Date(now + atExpiration); // 만료일자 생성
+
+        // 이메일로 사용자 객체 가져오기
+//        Member member = memberRepository.findByEmail(email)
+//                .orElseThrow(() -> new CommonException(ResponseCode.EMAIL_NOT_FOUND));
+//
+//        List<String> authorities = List.of(member.getRole());
+
+        String accessToken = Jwts.builder()
+                .subject(userId)
+                .id(jti) // jti
+                .expiration(atExpiresIn)
+//                .claim("authorities", authorities)
+                .signWith(getSecretKey())
+                .compact();
+
+        TokenDTO tokenDto = TokenDTO.builder()
+                .jti(jti) // jti
+                .accessToken(accessToken)
+                .atExpiresIn(atExpiration)
+                .build();
+
+        return tokenDto;
+    }
+
+    // access token 유효성 검사 (서명 위조, 만료 등)
+    public boolean validateToken(String requestAccessToken) {
+        try {
+
+            Jwts.parser().verifyWith(getSecretKey()).build().parse(requestAccessToken); // 유효성 검사
+
+            return true;
+
+        }catch(SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException | ExpiredJwtException e){
+
+            log.error("❌ JWT 유효성 검사 실패: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+
+            e.printStackTrace();
+
+            throw e;
+        }
+    }
+
+
+
+}
