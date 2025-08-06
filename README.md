@@ -1,7 +1,7 @@
 # Spring Security 기반 JWT 인증 서버 보일러플레이트
 
 이 프로젝트는 Spring Boot와 Spring Security를 기반으로 JWT 인증 기능을 구현한 보일러플레이트입니다.  
-Postman을 통해 직접 인증 흐름을 테스트할 수 있도록 설계되었습니다.  
+Postman 및 http 파일을 통해 직접 인증 흐름을 테스트할 수 있도록 설계되었습니다.  
 향후 Redis 연동, 자동 배포(Docker, GitHub Actions, GCP)까지 확장 예정입니다.
 
 ---
