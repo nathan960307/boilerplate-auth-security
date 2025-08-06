@@ -1,0 +1,10 @@
+### 회원가입 테스트
+
+POST http://localhost:8080/api/auth/signup
+Content-Type: application/json
+
+{
+  "email": "test1@example.com",
+  "password": "1234abcd",
+  "nickname": "테스트유저"
+}

@@ -3,7 +3,9 @@ package com.example.boilerplate_auth_security.controller;
 
 import com.example.boilerplate_auth_security.dto.TokenDTO;
 import com.example.boilerplate_auth_security.dto.request.LoginRequestDTO;
+import com.example.boilerplate_auth_security.dto.request.SignUpRequest;
 import com.example.boilerplate_auth_security.jwt.JwtTokenProvider;
+import com.example.boilerplate_auth_security.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<TokenDTO> login(
@@ -29,4 +32,19 @@ public class AuthController {
                 .status(HttpStatus.CREATED)
                 .body(tokenDTO);
     }
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(
+            @RequestBody SignUpRequest signUpRequest) {
+
+        userService.register(signUpRequest);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("회원가입 완료");
+
+    }
+
+
+
 }
