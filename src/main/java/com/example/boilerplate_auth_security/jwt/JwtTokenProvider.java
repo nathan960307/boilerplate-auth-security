@@ -1,10 +1,7 @@
 package com.example.boilerplate_auth_security.jwt;
 
 import com.example.boilerplate_auth_security.dto.TokenDTO;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import lombok.Getter;
@@ -117,11 +114,11 @@ public class JwtTokenProvider {
 
 
 
-    // access token 유효성 검사 (서명 위조, 만료 등)
-    public boolean validateToken(String requestAccessToken) {
+    // token 유효성 검사 (서명 위조, 만료 등)
+    public boolean validateToken(String token) {
         try {
 
-            Jwts.parser().verifyWith(getSecretKey()).build().parse(requestAccessToken); // 유효성 검사
+            Jwts.parser().verifyWith(getSecretKey()).build().parse(token); // 유효성 검사
 
             return true;
 
@@ -132,6 +129,16 @@ public class JwtTokenProvider {
             e.printStackTrace();
 
             throw e;
+        }
+    }
+
+    // Token 안에 있는 Claims (페이로드) 꺼내기
+    public Claims parseClaim(String token) {
+        try {
+            return Jwts.parser().verifyWith(getSecretKey()).build()
+                    .parseSignedClaims(token).getPayload();
+        } catch (ExpiredJwtException ex) {
+            return ex.getClaims();
         }
     }
 
