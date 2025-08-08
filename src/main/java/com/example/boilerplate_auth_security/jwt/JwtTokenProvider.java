@@ -79,9 +79,10 @@ public class JwtTokenProvider {
         String accessToken = Jwts.builder()
                 .subject(userId)
                 .id(jti) // jti
-                .expiration(atExpiresIn) // access token 만료 시간
-//                .claim("authorities", authorities)
-                .signWith(getSecretKey())
+                .issuedAt(new Date(now)) // 생성일자
+                .expiration(atExpiresIn) // 만료일자
+//              .claim("authorities", authorities) // todo 추후 payload 추가 예정
+                .signWith(getSecretKey()) // 서명
                 .compact();
 
 //        TokenDTO tokenDto = TokenDTO.builder()
@@ -92,6 +93,26 @@ public class JwtTokenProvider {
 //
 //        return tokenDto;
         return accessToken;
+    }
+
+    // refresh token 생성
+    public String generateRefreshToken(String userId){
+
+        String jti = UUID.randomUUID().toString(); // jti
+
+        long now = new Date().getTime();
+        Date rtExpiresIn = new Date(now + rtExpiration); // 만료일자 생성
+
+        String refreshToken = Jwts.builder()
+                .subject(userId)
+                .id(jti) // jti
+                .issuedAt(new Date(now)) // 생성일자
+                .expiration(rtExpiresIn) // 만료일자
+                .signWith(getSecretKey()) // 서명
+                .compact();
+
+        return refreshToken;
+
     }
 
 
