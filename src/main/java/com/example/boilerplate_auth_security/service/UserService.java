@@ -4,6 +4,7 @@ import com.example.boilerplate_auth_security.dto.request.SignUpRequest;
 import com.example.boilerplate_auth_security.entity.User;
 import com.example.boilerplate_auth_security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -35,6 +37,7 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
+        log.info("회원가입 성공");
     }
 
 
