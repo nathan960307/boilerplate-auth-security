@@ -19,6 +19,7 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
 
+    // 자체 로그인
     @PostMapping("/login")
     public ResponseEntity<TokenDTO> login(
             @RequestBody LoginRequestDTO request) {
@@ -26,13 +27,14 @@ public class AuthController {
         // TODO: 인증 로직 (아이디/비밀번호 확인) 추가 예정
 
         // 인증 성공 가정, userId는 이메일로 대체
-        TokenDTO tokenDTO = jwtTokenProvider.generateAccessToken(request.getEmail());
+//        TokenDTO tokenDTO = jwtTokenProvider.generateAccessToken(request.getEmail());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(tokenDTO);
+                .body(null);
     }
 
+    // 자체 회원 가입
     @PostMapping("/signup")
     public ResponseEntity<?> signup(
             @RequestBody SignUpRequest signUpRequest) {

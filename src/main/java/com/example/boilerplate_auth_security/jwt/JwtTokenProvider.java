@@ -18,6 +18,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * [ JwtTokenProvider ]
+ * 1. AccessToken 생성
+ * 2. RefreshToken 생성
+ * 3. 토큰 서명(Sign) 및 암호화 키 관리
+ * 4. 토큰 만료 시간 관리
+ * 5. 토큰 검증 (서명, 만료 여부, 포맷)
+ * 6. Claims 추출 (sub, role 등)
+ * 7. jti(UUID) 생성
+ * */
+
 @Component
 @Slf4j
 public class JwtTokenProvider {
@@ -52,7 +63,7 @@ public class JwtTokenProvider {
     }
 
     // access token 생성
-    public TokenDTO generateAccessToken(String userId){
+    public String generateAccessToken(String userId){
 
         String jti = UUID.randomUUID().toString(); // jti
 
@@ -68,19 +79,22 @@ public class JwtTokenProvider {
         String accessToken = Jwts.builder()
                 .subject(userId)
                 .id(jti) // jti
-                .expiration(atExpiresIn)
+                .expiration(atExpiresIn) // access token 만료 시간
 //                .claim("authorities", authorities)
                 .signWith(getSecretKey())
                 .compact();
 
-        TokenDTO tokenDto = TokenDTO.builder()
-                .jti(jti) // jti
-                .accessToken(accessToken)
-                .atExpiresIn(atExpiration)
-                .build();
-
-        return tokenDto;
+//        TokenDTO tokenDto = TokenDTO.builder()
+//                .jti(jti) // jti
+//                .accessToken(accessToken)
+//                .atExpiresIn(atExpiration)
+//                .build();
+//
+//        return tokenDto;
+        return accessToken;
     }
+
+
 
     // access token 유효성 검사 (서명 위조, 만료 등)
     public boolean validateToken(String requestAccessToken) {

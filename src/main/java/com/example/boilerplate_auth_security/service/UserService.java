@@ -16,6 +16,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+
+    // 회원 가입
     @Transactional
     public void register(SignUpRequest signUpRequest) {
 
@@ -33,7 +35,6 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
-
     }
 
 
