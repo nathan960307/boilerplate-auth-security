@@ -1,7 +1,7 @@
 package com.example.boilerplate_auth_security.service;
 
 import com.example.boilerplate_auth_security.dto.request.SignUpRequest;
-import com.example.boilerplate_auth_security.entity.User;
+import com.example.boilerplate_auth_security.entity.Member;
 import com.example.boilerplate_auth_security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-
     // 회원 가입
     @Transactional
     public void register(SignUpRequest signUpRequest) {
@@ -29,15 +28,14 @@ public class UserService {
             throw new UsernameNotFoundException("Email Already Exists");
         }
 
-        User user = User.builder()
+        Member member = Member.builder()
                 .email(signUpRequest.getEmail())
                 .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .nickname(signUpRequest.getNickname())
                 .role("USER")
                 .build();
 
-        userRepository.save(user);
-        log.info("회원가입 성공");
+        userRepository.save(member);
     }
 
 

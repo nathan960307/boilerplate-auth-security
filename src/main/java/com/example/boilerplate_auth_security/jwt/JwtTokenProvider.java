@@ -1,12 +1,19 @@
 package com.example.boilerplate_auth_security.jwt;
 
 import com.example.boilerplate_auth_security.dto.TokenDTO;
+import com.example.boilerplate_auth_security.entity.Member;
+import com.example.boilerplate_auth_security.repository.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -28,7 +35,10 @@ import java.util.UUID;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class JwtTokenProvider {
+
+    private final UserRepository userRepository;
 
     @Getter
     @Value("${jwt.access-expiration}")
@@ -60,7 +70,7 @@ public class JwtTokenProvider {
     }
 
     // access token 생성
-    public String generateAccessToken(String userId){
+    public String generateAccessToken(String email){
 
         String jti = UUID.randomUUID().toString(); // jti
 
@@ -68,17 +78,17 @@ public class JwtTokenProvider {
         Date atExpiresIn = new Date(now + atExpiration); // 만료일자 생성
 
         // 이메일로 사용자 객체 가져오기
-//        Member member = memberRepository.findByEmail(email)
-//                .orElseThrow(() -> new CommonException(ResponseCode.EMAIL_NOT_FOUND));
-//
-//        List<String> authorities = List.of(member.getRole());
+        Member member = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("탈퇴했거나 존재하지 않는 사용자입니다."));
+
+        List<String> authorities = List.of(member.getRole());
 
         String accessToken = Jwts.builder()
-                .subject(userId)
+                .subject(email)
                 .id(jti) // jti
                 .issuedAt(new Date(now)) // 생성일자
                 .expiration(atExpiresIn) // 만료일자
-//              .claim("authorities", authorities) // todo 추후 payload 추가 예정
+                .claim("authorities", authorities)
                 .signWith(getSecretKey()) // 서명
                 .compact();
 
@@ -93,7 +103,7 @@ public class JwtTokenProvider {
     }
 
     // refresh token 생성
-    public String generateRefreshToken(String userId){
+    public String generateRefreshToken(String email){
 
         String jti = UUID.randomUUID().toString(); // jti
 
@@ -101,7 +111,7 @@ public class JwtTokenProvider {
         Date rtExpiresIn = new Date(now + rtExpiration); // 만료일자 생성
 
         String refreshToken = Jwts.builder()
-                .subject(userId)
+                .subject(email)
                 .id(jti) // jti
                 .issuedAt(new Date(now)) // 생성일자
                 .expiration(rtExpiresIn) // 만료일자
@@ -141,6 +151,7 @@ public class JwtTokenProvider {
             return ex.getClaims();
         }
     }
+
 
 
 
